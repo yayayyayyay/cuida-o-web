@@ -1,0 +1,820 @@
+/* ==========================================================================
+   1. VARIÁVEIS VISUAIS E TEMAS (MODO CLARO, ESCURO E ACESSIBILIDADE)
+   ========================================================================== */
+:root {
+  --font-scale: 1;
+
+  /* Modo Claro */
+  --outer-backdrop: #d9e9df;
+  --app-bg: #edf7f1;
+  --card-bg: #ffffff;
+  --card-secondary: #e2f2e7;
+  --text-primary: #112619;
+  --text-secondary: #3b5745;
+  --text-muted: #668371;
+  --brand-primary: #159947;
+  --brand-dark: #0e6c31;
+  --brand-light: #d4f0de;
+  --border-color: #d1e4d7;
+  --input-bg: #ffffff;
+  --nav-bg: #ffffff;
+  --shadow-card: 0 4px 14px rgba(17, 48, 29, 0.06);
+  --shadow-priority: 0 6px 18px rgba(21, 153, 71, 0.14);
+}
+
+html[data-theme="dark"] {
+  /* Modo Escuro */
+  --outer-backdrop: #07120c;
+  --app-bg: #0d1e14;
+  --card-bg: #172e20;
+  --card-secondary: #1f3c2a;
+  --text-primary: #f1f8f3;
+  --text-secondary: #bcd6c5;
+  --text-muted: #82a590;
+  --brand-primary: #27c963;
+  --brand-dark: #159947;
+  --brand-light: #1f452e;
+  --border-color: #264833;
+  --input-bg: #183323;
+  --nav-bg: #12261a;
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.38);
+  --shadow-priority: 0 6px 18px rgba(39, 201, 99, 0.16);
+}
+
+/* Escala de Acessibilidade das Letras */
+html[data-font="small"] { --font-scale: 0.90; }
+html[data-font="default"] { --font-scale: 1.00; }
+html[data-font="large"] { --font-scale: 1.15; }
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--outer-backdrop);
+  color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 10px;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+/* ==========================================================================
+   2. MOLDURA SMARTPHONE RESPONSIVA (100% EM TELAS MENORES OU IFRAMES)
+   ========================================================================== */
+.mobile-device {
+  width: 100%;
+  max-width: 412px;
+  height: 850px;
+  max-height: 98dvh;
+  background: var(--app-bg);
+  border-radius: 40px;
+  border: 8px solid #16241b;
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.32);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  transition: background-color 0.25s ease;
+}
+
+@media (max-width: 480px), (max-height: 700px) {
+  body {
+    padding: 0;
+    background: var(--app-bg);
+  }
+  .mobile-device {
+    max-width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .device-notch {
+    display: none !important;
+  }
+}
+
+.device-notch {
+  width: 110px;
+  height: 20px;
+  background: #111a14;
+  border-radius: 999px;
+  margin: 8px auto 2px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   3. CABEÇALHO DO APLICATIVO
+   ========================================================================== */
+.app-header {
+  padding: 10px 16px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+  background: var(--app-bg);
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.app-brand-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: #159947;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 7px rgba(21, 153, 71, 0.28);
+}
+
+.app-brand-name {
+  font-size: calc(1.18rem * var(--font-scale));
+  color: var(--text-primary);
+  letter-spacing: -0.4px;
+  line-height: 1.1;
+}
+
+.app-brand-name strong {
+  font-weight: 800;
+  color: var(--brand-primary);
+}
+
+.app-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.circle-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.15s ease;
+}
+
+.circle-btn:active {
+  transform: scale(0.93);
+}
+
+.circle-btn.green-a11y {
+  background: var(--brand-primary);
+  color: #ffffff;
+  border-color: var(--brand-primary);
+}
+
+html[data-theme="dark"] .circle-btn.green-a11y {
+  color: #0d1e14;
+}
+
+.notif-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  border: 1.5px solid var(--card-bg);
+}
+
+/* ==========================================================================
+   4. CONTEÚDO ROLÁVEL E TELAS DO APLICATIVO
+   ========================================================================== */
+.app-scroll-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 16px 24px;
+  scrollbar-width: thin;
+}
+
+.app-scroll-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.app-scroll-content::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 999px;
+}
+
+.app-screen {
+  display: none;
+  animation: fadeScreen 0.18s ease-out;
+}
+
+.app-screen.active {
+  display: block;
+}
+
+@keyframes fadeScreen {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-title {
+  font-size: calc(1.22rem * var(--font-scale));
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--text-primary);
+  margin: 4px 0 12px;
+  letter-spacing: -0.3px;
+}
+
+.search-box {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.search-box svg {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 11px 36px 11px 38px;
+  border-radius: 13px;
+  border: 1.5px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: calc(0.88rem * var(--font-scale));
+  outline: none;
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: var(--brand-primary);
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--card-secondary);
+  color: var(--text-primary);
+  border: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   5. GRADE DOS 6 SERVIÇOS PRINCIPAIS
+   ========================================================================== */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 11px;
+  margin-bottom: 20px;
+}
+
+.service-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.15s ease, border-color 0.2s ease;
+  min-height: 118px;
+}
+
+.service-card:active {
+  transform: scale(0.97);
+}
+
+.service-card.priority {
+  border: 1.5px solid var(--brand-primary);
+  box-shadow: var(--shadow-priority);
+  background: linear-gradient(180deg, var(--card-bg) 0%, var(--card-secondary) 150%);
+}
+
+.service-icon-wrap {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: var(--brand-light);
+  color: var(--brand-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+  flex-shrink: 0;
+}
+
+.service-name {
+  font-size: calc(0.84rem * var(--font-scale));
+  font-weight: 800;
+  line-height: 1.22;
+  color: var(--text-primary);
+}
+
+.service-sub {
+  font-size: calc(0.71rem * var(--font-scale));
+  color: var(--text-secondary);
+  line-height: 1.25;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 14px 0 10px;
+}
+
+.section-heading h2 {
+  font-size: calc(1rem * var(--font-scale));
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.section-heading button {
+  background: none;
+  border: none;
+  color: var(--brand-primary);
+  font-family: inherit;
+  font-size: calc(0.78rem * var(--font-scale));
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Saúde em Foco */
+.focus-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.focus-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.focus-card:active {
+  transform: scale(0.98);
+}
+
+.focus-img {
+  width: 110px;
+  min-height: 88px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--card-secondary);
+}
+
+.focus-body {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.focus-tag {
+  font-size: calc(0.67rem * var(--font-scale));
+  font-weight: 800;
+  color: var(--brand-primary);
+  text-transform: uppercase;
+}
+
+.focus-title {
+  font-size: calc(0.82rem * var(--font-scale));
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.28;
+}
+
+.focus-date {
+  font-size: calc(0.68rem * var(--font-scale));
+  color: var(--text-muted);
+}
+
+/* Cards e Elementos Comuns */
+.app-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-card);
+}
+
+.badge-pill {
+  display: inline-block;
+  background: var(--brand-light);
+  color: var(--brand-primary);
+  font-size: calc(0.7rem * var(--font-scale));
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+
+.pill-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+  scrollbar-width: none;
+}
+
+.pill-row::-webkit-scrollbar {
+  display: none;
+}
+
+.pill-btn {
+  white-space: nowrap;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: calc(0.75rem * var(--font-scale));
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pill-btn.active {
+  background: var(--brand-primary);
+  color: #ffffff;
+  border-color: var(--brand-primary);
+}
+
+html[data-theme="dark"] .pill-btn.active {
+  color: #0d1e14;
+}
+
+/* Formulários */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 11px;
+}
+
+.form-field label {
+  font-size: calc(0.78rem * var(--font-scale));
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 11px;
+  border: 1.5px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: calc(0.85rem * var(--font-scale));
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: var(--brand-primary);
+}
+
+.btn-main {
+  width: 100%;
+  background: var(--brand-primary);
+  color: #ffffff;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: calc(0.88rem * var(--font-scale));
+  font-weight: 700;
+  cursor: pointer;
+}
+
+html[data-theme="dark"] .btn-main {
+  color: #072010;
+  font-weight: 800;
+}
+
+.btn-outline {
+  width: 100%;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border-color);
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: calc(0.84rem * var(--font-scale));
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   6. GUIA DE MEDICAMENTOS & FARMÁCIA BÁSICA (RENAME/REMUME)
+   ========================================================================== */
+.med-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 11px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.med-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.med-name {
+  font-size: calc(0.94rem * var(--font-scale));
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.med-dose {
+  font-size: calc(0.76rem * var(--font-scale));
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.med-meta-box {
+  background: var(--card-secondary);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: calc(0.77rem * var(--font-scale));
+}
+
+.med-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.35;
+}
+
+.med-row strong {
+  color: var(--text-primary);
+  min-width: 84px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   7. MAPA LEAFLET INTERATIVO (GUARUJÁ - SP)
+   ========================================================================== */
+#mobile-map {
+  width: 100%;
+  height: 260px;
+  border-radius: 15px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 12px;
+  z-index: 1;
+}
+
+html[data-theme="dark"] .leaflet-layer,
+html[data-theme="dark"] .leaflet-control-zoom-in,
+html[data-theme="dark"] .leaflet-control-zoom-out,
+html[data-theme="dark"] .leaflet-control-attribution {
+  filter: invert(100%) hue-rotate(150deg) brightness(92%) contrast(90%);
+}
+
+/* ==========================================================================
+   8. CONFIGURAÇÕES & ACESSIBILIDADE
+   ========================================================================== */
+.screen-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.screen-header-bar h2 {
+  font-size: calc(1.1rem * var(--font-scale));
+  font-weight: 800;
+}
+
+.theme-cards-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 10px 0 18px;
+}
+
+.theme-card-btn {
+  background: var(--card-bg);
+  border: 1.5px solid var(--border-color);
+  border-radius: 14px;
+  padding: 12px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: calc(0.76rem * var(--font-scale));
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-card-btn.active {
+  background: #152b1e;
+  color: #ffffff;
+  border-color: var(--brand-primary);
+}
+
+html[data-theme="dark"] .theme-card-btn.active {
+  background: var(--brand-primary);
+  color: #0b1c12;
+}
+
+.slider-wrap {
+  margin: 12px 0 6px;
+}
+
+.font-range-input {
+  width: 100%;
+  accent-color: var(--brand-primary);
+  height: 6px;
+  cursor: pointer;
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: calc(0.78rem * var(--font-scale));
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin: 4px 0 14px;
+}
+
+.slider-labels span.active-label {
+  color: var(--brand-primary);
+  font-weight: 800;
+}
+
+.text-preview-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--border-color);
+  border-radius: 14px;
+  padding: 14px;
+  margin-top: 8px;
+  font-size: calc(0.88rem * var(--font-scale));
+  color: var(--text-primary);
+  line-height: 1.45;
+  box-shadow: var(--shadow-card);
+}
+
+/* ==========================================================================
+   9. BARRA DE NAVEGAÇÃO INFERIOR FIXA (5 OPÇÕES)
+   ========================================================================== */
+.app-bottom-nav {
+  background: var(--nav-bg);
+  border-top: 1px solid var(--border-color);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  padding: 7px 4px 10px;
+  flex-shrink: 0;
+}
+
+.nav-tab {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: calc(0.68rem * var(--font-scale));
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 4px 2px;
+  border-radius: 10px;
+  transition: color 0.15s ease;
+}
+
+.nav-tab.active {
+  color: var(--brand-primary);
+  font-weight: 800;
+}
+
+/* ==========================================================================
+   10. PAINÉIS MODAIS (BOTTOM SHEETS) E TOASTS (SEM ALERT / CONFIRM)
+   ========================================================================== */
+.inapp-sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 50;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.inapp-sheet-backdrop.open {
+  display: flex;
+}
+
+.inapp-sheet {
+  width: 100%;
+  max-height: 82%;
+  background: var(--card-bg);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 18px 16px 22px;
+  overflow-y: auto;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.2s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.inapp-toast {
+  position: absolute;
+  bottom: 74px;
+  left: 16px;
+  right: 16px;
+  background: #0e6c31;
+  color: #ffffff;
+  padding: 11px 14px;
+  border-radius: 12px;
+  font-size: calc(0.78rem * var(--font-scale));
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+  z-index: 60;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
