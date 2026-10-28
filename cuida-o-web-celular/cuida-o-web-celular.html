@@ -1,0 +1,2387 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light" data-font="default">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#159947" />
+  <title>cuidAÇÃO — Saúde, Meio Ambiente e Proteção Animal</title>
+
+  <!-- Favicon / Ícone Oficial (Fundo verde sólido, cantos arredondados e símbolo branco) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23159947'/%3E%3Cpath d='M48 14 C28 18 18 36 23 56 C26 67 36 74 47 76 C47 56 44 37 36 26 C41 34 46 49 48 68 C51 47 52 27 48 14 Z' fill='white'/%3E%3Cpath d='M51 31 C56 23 68 23 75 30 C82 37 81 50 71 61 C64 68 55 74 49 78 C48 61 48 44 51 31 Z' fill='white'/%3E%3Cpath d='M12 58 C10 68 15 79 25 86 L42 96 C45 98 47 95 46 92 L43 85 C42 82 39 80 35 78 L23 70 C19 67 17 62 17 57 C17 54 13 54 12 58 Z' fill='white'/%3E%3Cpath d='M88 58 C90 68 85 79 75 86 L58 96 C55 98 53 95 54 92 L57 85 C58 82 61 80 65 78 L77 70 C81 67 83 62 83 57 C83 54 87 54 88 58 Z' fill='white'/%3E%3C/svg%3E" />
+
+  <!-- Tipografia Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Leaflet CSS & JS para Mapa Interativo do Guarujá -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Estilos do Aplicativo -->
+  <style>
+/* ==========================================================================
+   1. VARIÁVEIS VISUAIS E TEMAS (MODO CLARO, ESCURO E ACESSIBILIDADE)
+   ========================================================================== */
+:root {
+  --font-scale: 1;
+
+  /* Modo Claro */
+  --outer-backdrop: #d9e9df;
+  --app-bg: #edf7f1;
+  --card-bg: #ffffff;
+  --card-secondary: #e2f2e7;
+  --text-primary: #112619;
+  --text-secondary: #3b5745;
+  --text-muted: #668371;
+  --brand-primary: #159947;
+  --brand-dark: #0e6c31;
+  --brand-light: #d4f0de;
+  --border-color: #d1e4d7;
+  --input-bg: #ffffff;
+  --nav-bg: #ffffff;
+  --shadow-card: 0 4px 14px rgba(17, 48, 29, 0.06);
+  --shadow-priority: 0 6px 18px rgba(21, 153, 71, 0.14);
+}
+
+html[data-theme="dark"] {
+  /* Modo Escuro */
+  --outer-backdrop: #07120c;
+  --app-bg: #0d1e14;
+  --card-bg: #172e20;
+  --card-secondary: #1f3c2a;
+  --text-primary: #f1f8f3;
+  --text-secondary: #bcd6c5;
+  --text-muted: #82a590;
+  --brand-primary: #27c963;
+  --brand-dark: #159947;
+  --brand-light: #1f452e;
+  --border-color: #264833;
+  --input-bg: #183323;
+  --nav-bg: #12261a;
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.38);
+  --shadow-priority: 0 6px 18px rgba(39, 201, 99, 0.16);
+}
+
+/* Escala de Acessibilidade das Letras */
+html[data-font="small"] { --font-scale: 0.90; }
+html[data-font="default"] { --font-scale: 1.00; }
+html[data-font="large"] { --font-scale: 1.15; }
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--outer-backdrop);
+  color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 10px;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+/* ==========================================================================
+   2. MOLDURA SMARTPHONE RESPONSIVA (100% EM TELAS MENORES OU IFRAMES)
+   ========================================================================== */
+.mobile-device {
+  width: 100%;
+  max-width: 412px;
+  height: 850px;
+  max-height: 98dvh;
+  background: var(--app-bg);
+  border-radius: 40px;
+  border: 8px solid #16241b;
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.32);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  transition: background-color 0.25s ease;
+}
+
+@media (max-width: 480px), (max-height: 700px) {
+  body {
+    padding: 0;
+    background: var(--app-bg);
+  }
+  .mobile-device {
+    max-width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .device-notch {
+    display: none !important;
+  }
+}
+
+.device-notch {
+  width: 110px;
+  height: 20px;
+  background: #111a14;
+  border-radius: 999px;
+  margin: 8px auto 2px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   3. CABEÇALHO DO APLICATIVO
+   ========================================================================== */
+.app-header {
+  padding: 10px 16px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+  background: var(--app-bg);
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.app-brand-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: #159947;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 7px rgba(21, 153, 71, 0.28);
+}
+
+.app-brand-name {
+  font-size: calc(1.18rem * var(--font-scale));
+  color: var(--text-primary);
+  letter-spacing: -0.4px;
+  line-height: 1.1;
+}
+
+.app-brand-name strong {
+  font-weight: 800;
+  color: var(--brand-primary);
+}
+
+.app-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.circle-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.15s ease;
+}
+
+.circle-btn:active {
+  transform: scale(0.93);
+}
+
+.circle-btn.green-a11y {
+  background: var(--brand-primary);
+  color: #ffffff;
+  border-color: var(--brand-primary);
+}
+
+html[data-theme="dark"] .circle-btn.green-a11y {
+  color: #0d1e14;
+}
+
+.notif-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  border: 1.5px solid var(--card-bg);
+}
+
+/* ==========================================================================
+   4. CONTEÚDO ROLÁVEL E TELAS DO APLICATIVO
+   ========================================================================== */
+.app-scroll-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 16px 24px;
+  scrollbar-width: thin;
+}
+
+.app-scroll-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.app-scroll-content::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 999px;
+}
+
+.app-screen {
+  display: none;
+  animation: fadeScreen 0.18s ease-out;
+}
+
+.app-screen.active {
+  display: block;
+}
+
+@keyframes fadeScreen {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-title {
+  font-size: calc(1.22rem * var(--font-scale));
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--text-primary);
+  margin: 4px 0 12px;
+  letter-spacing: -0.3px;
+}
+
+.search-box {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.search-box svg {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 11px 36px 11px 38px;
+  border-radius: 13px;
+  border: 1.5px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: calc(0.88rem * var(--font-scale));
+  outline: none;
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: var(--brand-primary);
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--card-secondary);
+  color: var(--text-primary);
+  border: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   5. GRADE DOS 6 SERVIÇOS PRINCIPAIS
+   ========================================================================== */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 11px;
+  margin-bottom: 20px;
+}
+
+.service-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.15s ease, border-color 0.2s ease;
+  min-height: 118px;
+}
+
+.service-card:active {
+  transform: scale(0.97);
+}
+
+.service-card.priority {
+  border: 1.5px solid var(--brand-primary);
+  box-shadow: var(--shadow-priority);
+  background: linear-gradient(180deg, var(--card-bg) 0%, var(--card-secondary) 150%);
+}
+
+.service-icon-wrap {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: var(--brand-light);
+  color: var(--brand-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+  flex-shrink: 0;
+}
+
+.service-name {
+  font-size: calc(0.84rem * var(--font-scale));
+  font-weight: 800;
+  line-height: 1.22;
+  color: var(--text-primary);
+}
+
+.service-sub {
+  font-size: calc(0.71rem * var(--font-scale));
+  color: var(--text-secondary);
+  line-height: 1.25;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 14px 0 10px;
+}
+
+.section-heading h2 {
+  font-size: calc(1rem * var(--font-scale));
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.section-heading button {
+  background: none;
+  border: none;
+  color: var(--brand-primary);
+  font-family: inherit;
+  font-size: calc(0.78rem * var(--font-scale));
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Saúde em Foco */
+.focus-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.focus-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.focus-card:active {
+  transform: scale(0.98);
+}
+
+.focus-img {
+  width: 110px;
+  min-height: 88px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--card-secondary);
+}
+
+.focus-body {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.focus-tag {
+  font-size: calc(0.67rem * var(--font-scale));
+  font-weight: 800;
+  color: var(--brand-primary);
+  text-transform: uppercase;
+}
+
+.focus-title {
+  font-size: calc(0.82rem * var(--font-scale));
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.28;
+}
+
+.focus-date {
+  font-size: calc(0.68rem * var(--font-scale));
+  color: var(--text-muted);
+}
+
+/* Cards e Elementos Comuns */
+.app-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-card);
+}
+
+.badge-pill {
+  display: inline-block;
+  background: var(--brand-light);
+  color: var(--brand-primary);
+  font-size: calc(0.7rem * var(--font-scale));
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+
+.pill-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+  scrollbar-width: none;
+}
+
+.pill-row::-webkit-scrollbar {
+  display: none;
+}
+
+.pill-btn {
+  white-space: nowrap;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: calc(0.75rem * var(--font-scale));
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pill-btn.active {
+  background: var(--brand-primary);
+  color: #ffffff;
+  border-color: var(--brand-primary);
+}
+
+html[data-theme="dark"] .pill-btn.active {
+  color: #0d1e14;
+}
+
+/* Formulários */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 11px;
+}
+
+.form-field label {
+  font-size: calc(0.78rem * var(--font-scale));
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 11px;
+  border: 1.5px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: calc(0.85rem * var(--font-scale));
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: var(--brand-primary);
+}
+
+.btn-main {
+  width: 100%;
+  background: var(--brand-primary);
+  color: #ffffff;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: calc(0.88rem * var(--font-scale));
+  font-weight: 700;
+  cursor: pointer;
+}
+
+html[data-theme="dark"] .btn-main {
+  color: #072010;
+  font-weight: 800;
+}
+
+.btn-outline {
+  width: 100%;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border-color);
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: calc(0.84rem * var(--font-scale));
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   6. GUIA DE MEDICAMENTOS & FARMÁCIA BÁSICA (RENAME/REMUME)
+   ========================================================================== */
+.med-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 11px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.med-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.med-name {
+  font-size: calc(0.94rem * var(--font-scale));
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.med-dose {
+  font-size: calc(0.76rem * var(--font-scale));
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.med-meta-box {
+  background: var(--card-secondary);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: calc(0.77rem * var(--font-scale));
+}
+
+.med-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.35;
+}
+
+.med-row strong {
+  color: var(--text-primary);
+  min-width: 84px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   7. MAPA LEAFLET INTERATIVO (GUARUJÁ - SP)
+   ========================================================================== */
+#mobile-map {
+  width: 100%;
+  height: 260px;
+  border-radius: 15px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 12px;
+  z-index: 1;
+}
+
+html[data-theme="dark"] .leaflet-layer,
+html[data-theme="dark"] .leaflet-control-zoom-in,
+html[data-theme="dark"] .leaflet-control-zoom-out,
+html[data-theme="dark"] .leaflet-control-attribution {
+  filter: invert(100%) hue-rotate(150deg) brightness(92%) contrast(90%);
+}
+
+/* ==========================================================================
+   8. CONFIGURAÇÕES & ACESSIBILIDADE
+   ========================================================================== */
+.screen-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.screen-header-bar h2 {
+  font-size: calc(1.1rem * var(--font-scale));
+  font-weight: 800;
+}
+
+.theme-cards-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 10px 0 18px;
+}
+
+.theme-card-btn {
+  background: var(--card-bg);
+  border: 1.5px solid var(--border-color);
+  border-radius: 14px;
+  padding: 12px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: calc(0.76rem * var(--font-scale));
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-card-btn.active {
+  background: #152b1e;
+  color: #ffffff;
+  border-color: var(--brand-primary);
+}
+
+html[data-theme="dark"] .theme-card-btn.active {
+  background: var(--brand-primary);
+  color: #0b1c12;
+}
+
+.slider-wrap {
+  margin: 12px 0 6px;
+}
+
+.font-range-input {
+  width: 100%;
+  accent-color: var(--brand-primary);
+  height: 6px;
+  cursor: pointer;
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: calc(0.78rem * var(--font-scale));
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin: 4px 0 14px;
+}
+
+.slider-labels span.active-label {
+  color: var(--brand-primary);
+  font-weight: 800;
+}
+
+.text-preview-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--border-color);
+  border-radius: 14px;
+  padding: 14px;
+  margin-top: 8px;
+  font-size: calc(0.88rem * var(--font-scale));
+  color: var(--text-primary);
+  line-height: 1.45;
+  box-shadow: var(--shadow-card);
+}
+
+/* ==========================================================================
+   9. ÁREA DE USUÁRIO
+   ========================================================================== */
+.account-screen {
+  padding-bottom: 8px;
+}
+
+.account-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 225px;
+  padding: 21px 21px 44px;
+  border-radius: 25px;
+  background: linear-gradient(140deg, #0c6d32 0%, #107c38 68%, #159947 100%);
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 111, 50, 0.20);
+}
+
+.account-hero-art,
+.account-hero-art::before,
+.account-hero-art::after {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.account-hero-art {
+  width: 215px;
+  height: 215px;
+  top: -98px;
+  right: -91px;
+}
+
+.account-hero-art::before {
+  content: '';
+  inset: 24px;
+}
+
+.account-hero-art::after {
+  content: '';
+  width: 164px;
+  height: 164px;
+  top: 108px;
+  right: 99px;
+}
+
+.account-hero-top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.account-eyebrow,
+.account-card-kicker {
+  font-size: calc(0.62rem * var(--font-scale));
+  font-weight: 800;
+  letter-spacing: 1.25px;
+}
+
+.account-eyebrow { color: rgba(255, 255, 255, 0.87); }
+
+.account-hero-symbol {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.17);
+}
+
+.account-hero h1 {
+  position: relative;
+  font-size: calc(1.72rem * var(--font-scale));
+  line-height: 1.08;
+  letter-spacing: -0.7px;
+  font-weight: 800;
+}
+
+.account-hero p {
+  position: relative;
+  max-width: 245px;
+  margin-top: 9px;
+  font-size: calc(0.76rem * var(--font-scale));
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.account-hero-accent {
+  position: absolute;
+  right: 22px;
+  bottom: 44px;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  transform: rotate(-32deg);
+  opacity: 0.5;
+}
+
+.account-hero-accent span {
+  display: block;
+  width: 10px;
+  height: 30px;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.account-hero-accent span:nth-child(2) { height: 44px; }
+.account-hero-accent span:nth-child(3) { height: 23px; }
+
+.account-card {
+  position: relative;
+  margin: -28px 9px 0;
+  padding: 22px 19px 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 22px;
+  background: var(--card-bg);
+  box-shadow: 0 12px 26px rgba(17, 48, 29, 0.11);
+}
+
+html[data-theme="dark"] .account-card {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
+.account-card-kicker { color: var(--brand-dark); }
+html[data-theme="dark"] .account-card-kicker { color: var(--brand-primary); }
+
+.account-card-heading h2 {
+  margin-top: 6px;
+  font-size: calc(1.28rem * var(--font-scale));
+  line-height: 1.2;
+  letter-spacing: -0.45px;
+}
+
+.account-card-heading p {
+  margin: 5px 0 20px;
+  color: var(--text-secondary);
+  font-size: calc(0.78rem * var(--font-scale));
+}
+
+.account-field + .account-field { margin-top: 16px; }
+
+.account-field label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--text-primary);
+  font-size: calc(0.79rem * var(--font-scale));
+  font-weight: 700;
+}
+
+.account-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 13px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--input-bg);
+  color: var(--text-muted);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.account-input-wrap:focus-within {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px var(--brand-light);
+}
+
+.account-input-wrap > svg { flex: 0 0 auto; }
+
+.account-input-wrap input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: max(16px, calc(1rem * var(--font-scale)));
+}
+
+.account-input-wrap input::placeholder { color: var(--text-muted); opacity: 1; }
+
+.account-password-toggle {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.account-password-toggle:focus-visible,
+.account-submit:focus-visible,
+.nav-tab:focus-visible {
+  outline: 3px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+.account-eye-slash { display: block; }
+.account-password-toggle.is-visible .account-eye-slash { display: none; }
+
+.account-form-message {
+  margin-top: 15px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--brand-light);
+  color: var(--brand-dark);
+  font-size: calc(0.76rem * var(--font-scale));
+  line-height: 1.4;
+}
+
+.account-form-message[hidden] { display: none; }
+
+html[data-theme="dark"] .account-form-message { color: var(--text-primary); }
+
+.account-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 49px;
+  margin-top: 21px;
+  padding: 10px 13px;
+  border: 0;
+  border-radius: 12px;
+  background: #0e6c31;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: calc(0.86rem * var(--font-scale));
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 5px 13px rgba(21, 153, 71, 0.2);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.account-submit:hover { background: #0b5426; }
+.account-submit:active { transform: scale(0.98); }
+
+html[data-theme="dark"] .account-submit {
+  background: var(--brand-primary);
+  color: #0d1e14;
+}
+html[data-theme="dark"] .account-submit:hover { background: #39d775; }
+
+.account-help {
+  padding: 18px 14px 4px;
+  color: var(--text-secondary);
+  font-size: calc(0.71rem * var(--font-scale));
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* ==========================================================================
+   10. BARRA DE NAVEGAÇÃO INFERIOR FIXA
+   ========================================================================== */
+.app-bottom-nav {
+  background: var(--nav-bg);
+  border-top: 1px solid var(--border-color);
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  padding: 7px 4px 10px;
+  flex-shrink: 0;
+}
+
+.nav-tab {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: calc(0.59rem * var(--font-scale));
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 4px 2px;
+  border-radius: 10px;
+  transition: color 0.15s ease;
+}
+
+.nav-tab span { white-space: nowrap; }
+
+.nav-tab.active {
+  color: var(--brand-primary);
+  font-weight: 800;
+}
+
+/* ==========================================================================
+   10. PAINÉIS MODAIS (BOTTOM SHEETS) E TOASTS (SEM ALERT / CONFIRM)
+   ========================================================================== */
+.inapp-sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 50;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.inapp-sheet-backdrop.open {
+  display: flex;
+}
+
+.inapp-sheet {
+  width: 100%;
+  max-height: 82%;
+  background: var(--card-bg);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 18px 16px 22px;
+  overflow-y: auto;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.2s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.inapp-toast {
+  position: absolute;
+  bottom: 74px;
+  left: 16px;
+  right: 16px;
+  background: #0e6c31;
+  color: #ffffff;
+  padding: 11px 14px;
+  border-radius: 12px;
+  font-size: calc(0.78rem * var(--font-scale));
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+  z-index: 60;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+</style>
+</head>
+<body>
+
+  <!-- Símbolo Vetorial Exclusivo do cuidAÇÃO -->
+  <svg width="0" height="0" style="position:absolute; width:0; height:0; overflow:hidden;" aria-hidden="true">
+    <defs>
+      <!-- Folha (meio ambiente) + Coração (saúde) + Mãos de amparo (proteção e bem-estar) -->
+      <g id="cuidacao-symbol">
+        <path d="M48 14 C28 18 18 36 23 56 C26 67 36 74 47 76 C47 56 44 37 36 26 C41 34 46 49 48 68 C51 47 52 27 48 14 Z" fill="currentColor" />
+        <path d="M51 31 C56 23 68 23 75 30 C82 37 81 50 71 61 C64 68 55 74 49 78 C48 61 48 44 51 31 Z" fill="currentColor" />
+        <path d="M12 58 C10 68 15 79 25 86 L42 96 C45 98 47 95 46 92 L43 85 C42 82 39 80 35 78 L23 70 C19 67 17 62 17 57 C17 54 13 54 12 58 Z" fill="currentColor" />
+        <path d="M88 58 C90 68 85 79 75 86 L58 96 C55 98 53 95 54 92 L57 85 C58 82 61 80 65 78 L77 70 C81 67 83 62 83 57 C83 54 87 54 88 58 Z" fill="currentColor" />
+      </g>
+    </defs>
+  </svg>
+
+  <!-- MOLDURA MOBILE DO APLICATIVO -->
+  <div class="mobile-device">
+    <div class="device-notch"></div>
+
+    <!-- CABEÇALHO DO APLICATIVO -->
+    <header class="app-header">
+      <button class="app-brand" onclick="openAppScreen('inicio')" aria-label="Ir para o Início">
+        <div class="app-brand-icon">
+          <svg width="24" height="24" viewBox="0 0 100 100">
+            <use href="#cuidacao-symbol"></use>
+          </svg>
+        </div>
+        <span class="app-brand-name">cuid<strong>AÇÃO</strong></span>
+      </button>
+
+      <div class="app-header-actions">
+        <!-- Atalho Rápido de Acessibilidade -->
+        <button class="circle-btn green-a11y" onclick="openAppScreen('configuracoes')" title="Acessibilidade e Aparência" aria-label="Acessibilidade">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="5" r="2"/>
+            <path d="M5 9h14M12 9v11M9 20l3-6 3 6"/>
+          </svg>
+        </button>
+
+        <!-- Notificações -->
+        <button class="circle-btn" onclick="openNotificationsSheet()" title="Notificações" aria-label="Notificações">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span id="notifBadge" class="notif-dot"></span>
+        </button>
+
+        <!-- Configurações -->
+        <button class="circle-btn" onclick="openAppScreen('configuracoes')" title="Configurações" aria-label="Configurações">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ÁREA ROLÁVEL PRINCIPAL -->
+    <main class="app-scroll-content" id="mainScrollArea">
+
+      <!-- ==================== TELA 1: INÍCIO ==================== -->
+      <section id="screen-inicio" class="app-screen active">
+        <h1 class="welcome-title">Olá! Como podemos<br>cuidar de você hoje?</h1>
+
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="search"
+            id="homeSearchInput"
+            class="search-input"
+            placeholder="O que você está procurando?"
+            aria-label="O que você está procurando?"
+            oninput="filterHomeContent(this.value)"
+          />
+          <button type="button" id="clearSearchBtn" class="clear-search-btn" onclick="clearHomeSearch()" aria-label="Limpar pesquisa">✕</button>
+        </div>
+
+        <!-- Grade 2x3 com os Serviços Principais -->
+        <div class="services-grid" id="homeServicesGrid">
+          <!-- 1. Guia de Medicamentos (Destaque Principal) -->
+          <div class="service-card priority" data-keywords="farmacia basica medicamentos remedios receita ubs remume rename dosagem" onclick="openAppScreen('saude')">
+            <div class="service-icon-wrap">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/>
+                <path d="m8.5 8.5 7 7"/>
+              </svg>
+            </div>
+            <span class="service-name">Guia de Medicamentos</span>
+            <span class="service-sub">Farmácia básica & receitas</span>
+          </div>
+
+          <!-- 2. Denúncias Ambientais (Destaque) -->
+          <div class="service-card priority" data-keywords="denuncias ambientais poluicao lixo queimadas descarte irregular meio ambiente" onclick="selectDenunciaType('ambiental')">
+            <div class="service-icon-wrap">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+                <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+              </svg>
+            </div>
+            <span class="service-name">Denúncias Ambientais</span>
+            <span class="service-sub">Poluição e descarte</span>
+          </div>
+
+          <!-- 3. Maus-tratos a Animais (Destaque) -->
+          <div class="service-card priority" data-keywords="maus-tratos animais protecao animal abandono resgate bem-estar zoonoses" onclick="selectDenunciaType('animal')">
+            <div class="service-icon-wrap">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/>
+                <path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/>
+              </svg>
+            </div>
+            <span class="service-name">Maus-tratos a Animais</span>
+            <span class="service-sub">Proteção e resgate animal</span>
+          </div>
+
+          <!-- 4. Notícias de Saúde -->
+          <div class="service-card" data-keywords="noticias saude vacinacao prevencao campanhas qualidade de vida ubs" onclick="scrollToHomeNews()">
+            <div class="service-icon-wrap">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
+                <path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/>
+              </svg>
+            </div>
+            <span class="service-name">Notícias de Saúde</span>
+            <span class="service-sub">Vacinas e prevenção</span>
+          </div>
+
+          <!-- 5. Comunidade -->
+          <div class="service-card" data-keywords="comunidade mutirao acoes bairro moradores conscientizacao" onclick="openAppScreen('comunidade')">
+            <div class="service-icon-wrap">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <span class="service-name">Comunidade</span>
+            <span class="service-sub">Ações e iniciativas locais</span>
+          </div>
+
+          <!-- 6. Mapa -->
+          <div class="service-card" data-keywords="mapa localizacao ubs ecoponto farmacia zoonoses pontos" onclick="openAppScreen('mapa')">
+            <div class="service-icon-wrap">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <span class="service-name">Mapa</span>
+            <span class="service-sub">Farmácias, UBS e ecopontos</span>
+          </div>
+        </div>
+
+        <!-- Seção Saúde em Foco -->
+        <div class="section-heading" id="homeNewsHeader">
+          <h2>Saúde em Foco</h2>
+          <button type="button" onclick="openAppScreen('saude')">Ver Medicamentos →</button>
+        </div>
+
+        <div class="focus-list" id="homeNewsList"></div>
+
+        <!-- Seção Nossa Comunidade (Prévia) -->
+        <div class="section-heading">
+          <h2>Nossa comunidade</h2>
+          <button type="button" onclick="openAppScreen('comunidade')">Ver mural →</button>
+        </div>
+
+        <div id="homeCommunityPreview"></div>
+      </section>
+
+      <!-- ==================== TELA 2: GUIA DE MEDICAMENTOS (SAÚDE) ==================== -->
+      <section id="screen-saude" class="app-screen">
+        <div class="screen-header-bar">
+          <h2>Farmácia Básica & RENAME</h2>
+        </div>
+
+        <!-- Busca Dinâmica de Medicamentos -->
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="search"
+            id="medSearchInput"
+            class="search-input"
+            placeholder="Buscar remédio (ex: Losartana, Amoxicilina...)"
+            oninput="searchMedicamentos(this.value)"
+          />
+        </div>
+
+        <!-- Filtros por Categoria -->
+        <div class="pill-row">
+          <button type="button" class="pill-btn active" data-medfilter="todos" onclick="filterMedByCategory('todos', this)">Todos</button>
+          <button type="button" class="pill-btn" data-medfilter="pressao" onclick="filterMedByCategory('pressao', this)">Hipertensão</button>
+          <button type="button" class="pill-btn" data-medfilter="diabetes" onclick="filterMedByCategory('diabetes', this)">Diabetes</button>
+          <button type="button" class="pill-btn" data-medfilter="antibiotico" onclick="filterMedByCategory('antibiotico', this)">Antibióticos</button>
+          <button type="button" class="pill-btn" data-medfilter="dor" onclick="filterMedByCategory('dor', this)">Dor & Febre</button>
+        </div>
+
+        <!-- Card de Orientações da Assistência Farmacêutica -->
+        <div class="app-card" style="background:var(--card-secondary); margin-bottom:12px;">
+          <strong style="font-size:calc(0.82rem * var(--font-scale)); color:var(--brand-primary); display:block; margin-bottom:3px;">
+            Documentação obrigatória para dispensação:
+          </strong>
+          <p style="font-size:calc(0.75rem * var(--font-scale)); color:var(--text-secondary); line-height:1.35;">
+            Documento original com foto (RG ou CNH), Cartão Nacional de Saúde (SUS) e Receita Médica legível emitida pelo SUS dentro da validade.
+          </p>
+        </div>
+
+        <!-- Lista de Medicamentos -->
+        <div id="medicamentosListContainer"></div>
+      </section>
+
+      <!-- ==================== TELA 3: DENÚNCIAS ==================== -->
+      <section id="screen-denuncias" class="app-screen">
+        <div class="screen-header-bar">
+          <h2>Central de Denúncias</h2>
+        </div>
+
+        <div class="pill-row">
+          <button type="button" id="pillDenAmbiental" class="pill-btn active" onclick="selectDenunciaType('ambiental')">🌿 Denúncias Ambientais</button>
+          <button type="button" id="pillDenAnimal" class="pill-btn" onclick="selectDenunciaType('animal')">🐾 Maus-tratos a Animais</button>
+        </div>
+
+        <div class="app-card">
+          <form onsubmit="handleDenunciaSubmit(event)">
+            <input type="hidden" id="denunciaCatInput" value="Ambiental" />
+
+            <div class="form-field">
+              <label for="denunciaSelectTipo">Tipo de Ocorrência</label>
+              <select id="denunciaSelectTipo" class="form-input" required></select>
+            </div>
+
+            <div class="form-field">
+              <label for="denunciaLocalInput">Localização ou Referência</label>
+              <div style="display:flex; gap:6px;">
+                <input type="text" id="denunciaLocalInput" class="form-input" placeholder="Ex.: Av. Dom Pedro I, próximo ao nº 900" required />
+                <button type="button" class="btn-outline" style="width:auto; white-space:nowrap; padding:0 12px;" onclick="useGpsLocation()">📍 GPS</button>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="denunciaDescInput">Descrição dos Fatos</label>
+              <textarea id="denunciaDescInput" rows="3" class="form-input" placeholder="Descreva o que foi observado para orientar a fiscalização..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-main">Registrar Denúncia e Gerar Protocolo</button>
+          </form>
+        </div>
+
+        <div class="section-heading">
+          <h2>Protocolos Abertos</h2>
+        </div>
+        <div id="denunciasHistoryList"></div>
+      </section>
+
+      <!-- ==================== TELA 4: COMUNIDADE ==================== -->
+      <section id="screen-comunidade" class="app-screen">
+        <div class="screen-header-bar">
+          <h2>Nossa Comunidade</h2>
+        </div>
+
+        <!-- Formulário para nova ação comunitária -->
+        <div class="app-card">
+          <form onsubmit="handlePostSubmit(event)">
+            <div class="form-field">
+              <label for="postAutor">Seu Nome ou Coletivo</label>
+              <input type="text" id="postAutor" class="form-input" placeholder="Ex.: Associação de Moradores Vila Maia" required />
+            </div>
+
+            <div class="form-field">
+              <label for="postTema">Tema da Ação</label>
+              <select id="postTema" class="form-input">
+                <option value="Ação Comunitária">Ação Comunitária</option>
+                <option value="Preservação Ambiental">Preservação Ambiental</option>
+                <option value="Proteção Animal">Proteção Animal</option>
+                <option value="Saúde Pública">Saúde Pública</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="postTexto">Mensagem para os Moradores</label>
+              <textarea id="postTexto" rows="2" class="form-input" placeholder="Compartilhe data, horário e orientações úteis..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-main">Publicar no Mural</button>
+          </form>
+        </div>
+
+        <div class="section-heading">
+          <h2>Mural de Ações</h2>
+        </div>
+        <div id="communityFeedList"></div>
+      </section>
+
+      <!-- ==================== TELA 5: MAPA INTERATIVO ==================== -->
+      <section id="screen-mapa" class="app-screen">
+        <div class="screen-header-bar">
+          <h2>Mapa de Pontos — Guarujá, SP</h2>
+        </div>
+
+        <div class="pill-row">
+          <button type="button" class="pill-btn active" data-mapfilter="todos" onclick="filterMapPoints('todos', this)">Todos</button>
+          <button type="button" class="pill-btn" data-mapfilter="saude" onclick="filterMapPoints('saude', this)">🟢 Farmácias / UBS</button>
+          <button type="button" class="pill-btn" data-mapfilter="ambiental" onclick="filterMapPoints('ambiental', this)">🔵 Ecoponto</button>
+          <button type="button" class="pill-btn" data-mapfilter="animal" onclick="filterMapPoints('animal', this)">🟠 Proteção Animal</button>
+        </div>
+
+        <!-- Contentor do Leaflet -->
+        <div id="mobile-map"></div>
+
+        <!-- Lista de pontos sincronizada -->
+        <div id="mapLocationsContainer"></div>
+      </section>
+
+      <!-- ==================== TELA 6: CONFIGURAÇÕES E ACESSIBILIDADE ==================== -->
+      <section id="screen-configuracoes" class="app-screen">
+        <div class="screen-header-bar">
+          <h2>Configurações</h2>
+        </div>
+
+        <!-- Aparência -->
+        <h3 style="font-size:calc(0.96rem * var(--font-scale)); font-weight:800;">Aparência</h3>
+        <div class="theme-cards-row">
+          <button type="button" class="theme-card-btn" id="themeBtn-light" onclick="setAppTheme('light')">
+            <span style="font-size:1.3rem;">☀️</span>
+            <span>Modo Claro</span>
+          </button>
+          <button type="button" class="theme-card-btn" id="themeBtn-dark" onclick="setAppTheme('dark')">
+            <span style="font-size:1.3rem;">🌙</span>
+            <span>Modo Escuro</span>
+          </button>
+          <button type="button" class="theme-card-btn" id="themeBtn-auto" onclick="setAppTheme('auto')">
+            <span style="font-size:1.3rem;">⚙️</span>
+            <span>Automático</span>
+          </button>
+        </div>
+
+        <!-- Acessibilidade: Tamanho das Letras -->
+        <h3 style="font-size:calc(0.96rem * var(--font-scale)); font-weight:800; margin-bottom:4px;">Acessibilidade</h3>
+        <p style="font-size:calc(0.82rem * var(--font-scale)); font-weight:600; color:var(--text-secondary);">Tamanho das Letras</p>
+
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button type="button" class="btn-outline" onclick="stepFontSize(-1)">A- Diminuir</button>
+          <button type="button" class="btn-outline" onclick="stepFontSize(1)">A+ Aumentar</button>
+        </div>
+
+        <div class="slider-wrap">
+          <input
+            type="range"
+            id="fontSlider"
+            class="font-range-input"
+            min="0"
+            max="2"
+            step="1"
+            value="1"
+            oninput="applyFontScaleByIndex(this.value)"
+            aria-label="Ajuste do tamanho das letras"
+          />
+        </div>
+
+        <div class="slider-labels">
+          <span id="fontLbl-0" onclick="applyFontScaleByIndex(0)" style="cursor:pointer;">Pequeno</span>
+          <span id="fontLbl-1" class="active-label" onclick="applyFontScaleByIndex(1)" style="cursor:pointer;">Padrão</span>
+          <span id="fontLbl-2" onclick="applyFontScaleByIndex(2)" style="cursor:pointer;">Grande</span>
+        </div>
+
+        <button type="button" class="btn-outline" onclick="applyFontScaleByIndex(1); showToast('Tamanho padrão restaurado.');">
+          Restaurar padrão
+        </button>
+
+        <p style="font-size:calc(0.82rem * var(--font-scale)); font-weight:700; margin-top:16px;">Prévia do texto</p>
+        <div class="text-preview-card">
+          Este é um exemplo de como os textos do aplicativo se adaptam para garantir uma leitura confortável e sem sobreposições.
+        </div>
+
+        <!-- Preferências Gerais -->
+        <h3 style="font-size:calc(0.96rem * var(--font-scale)); font-weight:800; margin:18px 0 8px;">Preferências</h3>
+        <div class="app-card" style="display:flex; flex-direction:column; gap:10px;">
+          <label style="display:flex; align-items:center; justify-content:space-between; font-size:calc(0.8rem * var(--font-scale));">
+            <span>Alertas de novos lotes de medicamentos nas farmácias</span>
+            <input type="checkbox" checked onchange="showToast('Preferência atualizada!')" style="width:18px; height:18px; accent-color:var(--brand-primary);" />
+          </label>
+          <label style="display:flex; align-items:center; justify-content:space-between; font-size:calc(0.8rem * var(--font-scale));">
+            <span>Avisos de mutirões e campanhas de castração/vacinação</span>
+            <input type="checkbox" checked onchange="showToast('Preferência atualizada!')" style="width:18px; height:18px; accent-color:var(--brand-primary);" />
+          </label>
+        </div>
+      </section>
+
+      <!-- ==================== TELA DE USUÁRIO ==================== -->
+      <section id="screen-usuario" class="app-screen account-screen" aria-labelledby="accountTitle">
+        <div class="account-hero">
+          <div class="account-hero-art" aria-hidden="true"></div>
+          <div class="account-hero-top">
+            <span class="account-eyebrow">SEU ESPAÇO NO cuidAÇÃO</span>
+            <span class="account-hero-symbol" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 100 100"><use href="#cuidacao-symbol"></use></svg>
+            </span>
+          </div>
+          <h1 id="accountTitle">Cuidar começa<br>por aqui.</h1>
+          <p>Entre na sua conta para acompanhar sua jornada com a gente.</p>
+          <div class="account-hero-accent" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <div class="account-card">
+          <div class="account-card-heading">
+            <span class="account-card-kicker">BEM-VINDO DE VOLTA</span>
+            <h2>Acesse sua conta</h2>
+            <p>Informe seus dados para continuar.</p>
+          </div>
+
+          <form id="accountLoginForm" onsubmit="handleAccountLogin(event)">
+            <div class="account-field">
+              <label for="accountEmail">E-mail</label>
+              <div class="account-input-wrap">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m3 6 9 7 9-7"/></svg>
+                <input id="accountEmail" name="email" type="email" placeholder="seuemail@exemplo.com" autocomplete="email" inputmode="email" required />
+              </div>
+            </div>
+
+            <div class="account-field">
+              <label for="accountPassword">Senha</label>
+              <div class="account-input-wrap">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                <input id="accountPassword" name="password" type="password" placeholder="Digite sua senha" autocomplete="current-password" required />
+                <button id="accountPasswordToggle" class="account-password-toggle" type="button" onclick="toggleAccountPassword()" aria-label="Mostrar senha" aria-pressed="false">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6Z"/><circle cx="12" cy="12" r="3"/><path class="account-eye-slash" d="m3 21 18-18"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <p id="accountLoginMessage" class="account-form-message" role="status" aria-live="polite" hidden></p>
+            <button type="submit" class="account-submit">
+              <span>Entrar na minha conta</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+            </button>
+          </form>
+        </div>
+
+        <p class="account-help">O acesso à conta será ativado quando a autenticação estiver disponível.</p>
+      </section>
+
+    </main>
+
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA -->
+    <nav class="app-bottom-nav" aria-label="Navegação do Aplicativo">
+      <button type="button" class="nav-tab active" data-tab="inicio" onclick="openAppScreen('inicio')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <span>Início</span>
+      </button>
+
+      <button type="button" class="nav-tab" data-tab="saude" onclick="openAppScreen('saude')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/>
+          <path d="m8.5 8.5 7 7"/>
+        </svg>
+        <span>Farmácia</span>
+      </button>
+
+      <button type="button" class="nav-tab" data-tab="denuncias" onclick="openAppScreen('denuncias')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Denúncia</span>
+      </button>
+
+      <button type="button" class="nav-tab" data-tab="comunidade" onclick="openAppScreen('comunidade')" aria-label="Comunidade">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+        <span>Mural</span>
+      </button>
+
+      <button type="button" class="nav-tab" data-tab="mapa" onclick="openAppScreen('mapa')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>Mapa</span>
+      </button>
+
+      <button type="button" class="nav-tab" data-tab="usuario" onclick="openAppScreen('usuario')" aria-label="Usuário">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
+        <span>Usuário</span>
+      </button>
+    </nav>
+
+    <!-- PAINEL DESLIZANTE DE NOTIFICAÇÕES (SUBSTITUTO DE ALERTS) -->
+    <div id="notificationsSheet" class="inapp-sheet-backdrop" onclick="closeNotificationsSheet()">
+      <div class="inapp-sheet" onclick="event.stopPropagation()">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+          <h3 style="font-size:calc(1rem * var(--font-scale)); font-weight:800;">Avisos & Notificações</h3>
+          <button type="button" onclick="closeNotificationsSheet()" style="background:none; border:none; color:var(--brand-primary); font-weight:800; cursor:pointer;">✕ Fechar</button>
+        </div>
+
+        <div class="app-card" style="cursor:pointer;" onclick="closeNotificationsSheet(); openAppScreen('saude');">
+          <span class="badge-pill">Farmácia Polo Municipal</span>
+          <h4 style="font-size:calc(0.85rem * var(--font-scale)); font-weight:800;">Novo lote de medicamentos para Hipertensão e Diabetes</h4>
+          <p style="font-size:calc(0.76rem * var(--font-scale)); color:var(--text-secondary); margin-top:2px;">Disponível para retirada com receita e cartão SUS na unidade Vicente de Carvalho.</p>
+        </div>
+
+        <div class="app-card" style="cursor:pointer;" onclick="closeNotificationsSheet(); openAppScreen('denuncias');">
+          <span class="badge-pill">Fiscalização Ambiental</span>
+          <h4 style="font-size:calc(0.85rem * var(--font-scale)); font-weight:800;">Denúncia #DEN-482103 em andamento</h4>
+          <p style="font-size:calc(0.76rem * var(--font-scale)); color:var(--text-secondary); margin-top:2px;">Equipe municipal acionada para remoção de descarte no Paecara.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAINEL DE LEITURA COMPLETA DE NOTÍCIA -->
+    <div id="newsDetailSheet" class="inapp-sheet-backdrop" onclick="closeNewsDetailSheet()">
+      <div class="inapp-sheet" onclick="event.stopPropagation()">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+          <span id="detailNewsCat" class="badge-pill" style="margin:0;">Saúde em Foco</span>
+          <button type="button" onclick="closeNewsDetailSheet()" style="background:none; border:none; color:var(--text-primary); font-weight:800; cursor:pointer;">✕</button>
+        </div>
+        <img id="detailNewsImg" src="" alt="" style="width:100%; height:150px; object-fit:cover; border-radius:14px; margin-bottom:10px;" />
+        <h3 id="detailNewsTitle" style="font-size:calc(0.98rem * var(--font-scale)); font-weight:800; margin-bottom:4px;"></h3>
+        <p id="detailNewsDate" style="font-size:calc(0.70rem * var(--font-scale)); color:var(--text-muted); margin-bottom:10px;"></p>
+        <p id="detailNewsText" style="font-size:calc(0.82rem * var(--font-scale)); color:var(--text-secondary); line-height:1.48; margin-bottom:14px;"></p>
+        <button type="button" class="btn-main" onclick="closeNewsDetailSheet(); openAppScreen('saude');">Consultar Medicamentos da Rede</button>
+      </div>
+    </div>
+
+    <!-- TOAST IN-APP PARA CONFIRMAÇÕES (SEM ALERT) -->
+    <div id="appToast" class="inapp-toast">
+      <span id="appToastMsg">Sucesso!</span>
+      <span>✓</span>
+    </div>
+  </div>
+
+  <!-- Lógica do Aplicativo -->
+  <script>
+/* ==========================================================================
+   1. ARMAZENAMENTO RESILIENTE (SUPORTA RESTRIÇÕES DE IFRAMES NO GOOGLE SITES)
+   ========================================================================== */
+const localStoreMemory = {};
+
+function getStorage(key, defaultValue) {
+  try {
+    const val = window.localStorage.getItem(key);
+    return val !== null ? val : (localStoreMemory[key] ?? defaultValue);
+  } catch (err) {
+    return localStoreMemory[key] ?? defaultValue;
+  }
+}
+
+function setStorage(key, val) {
+  localStoreMemory[key] = String(val);
+  try {
+    window.localStorage.setItem(key, String(val));
+  } catch (err) {
+    // Fallback ativo caso iframe de terceiros bloqueie armazenamento persistente
+  }
+}
+
+/* ==========================================================================
+   2. CATÁLOGO OFICIAL: GUIA DE MEDICAMENTOS (RENAME / REMUME)
+   ========================================================================== */
+const medicamentosData = [
+  {
+    id: 1,
+    nome: "Losartana Potássica",
+    dosagem: "50 mg (Comprimido)",
+    categoria: "pressao",
+    padrao: "Padrão RENAME / REMUME",
+    receita: "Receita Comum (1 via) — Validade: 180 dias para uso contínuo",
+    docs: "Documento com foto (RG/CNH) e Cartão Nacional de Saúde (SUS)",
+    locais: "Todas as UBS do município e Farmácia Central"
+  },
+  {
+    id: 2,
+    nome: "Cloridrato de Metformina",
+    dosagem: "850 mg (Comprimido)",
+    categoria: "diabetes",
+    padrao: "Padrão RENAME / REMUME",
+    receita: "Receita Comum (1 via) — Validade: 180 dias para uso contínuo",
+    docs: "Documento original com foto e Cartão SUS",
+    locais: "Todas as UBS do município e Farmácia Polo Vicente de Carvalho"
+  },
+  {
+    id: 3,
+    nome: "Amoxicilina",
+    dosagem: "500 mg (Cápsula)",
+    categoria: "antibiotico",
+    padrao: "Componente Básico RENAME",
+    receita: "Receita de Controle Especial em 2 vias (1 via retida) — Validade: 10 dias",
+    docs: "RG/CNH do paciente e do comprador, e Receita em 2 vias dentro do prazo",
+    locais: "Farmácia Básica Vila Maia e Farmácia Polo Vicente de Carvalho"
+  },
+  {
+    id: 4,
+    nome: "Dipirona Monoidratada",
+    dosagem: "500 mg (Comprimido ou Gotas)",
+    categoria: "dor",
+    padrao: "Padrão RENAME / REMUME",
+    receita: "Receita Comum (1 via) — Validade: 30 dias",
+    docs: "RG e Cartão SUS",
+    locais: "Todas as UBSs e Prontos Atendimentos Municipais"
+  },
+  {
+    id: 5,
+    nome: "Omeprazol",
+    dosagem: "20 mg (Cápsula)",
+    categoria: "dor",
+    padrao: "Padrão RENAME / REMUME",
+    receita: "Receita Comum (1 via) — Validade: 60 dias",
+    docs: "Documento oficial com foto e Cartão SUS",
+    locais: "Todas as Farmácias das Unidades Básicas de Saúde"
+  },
+  {
+    id: 6,
+    nome: "Glibenclamida",
+    dosagem: "5 mg (Comprimido)",
+    categoria: "diabetes",
+    padrao: "Padrão RENAME / REMUME",
+    receita: "Receita Comum (1 via) — Validade: 180 dias para uso contínuo",
+    docs: "RG, Cartão SUS e Receita Médica do SUS",
+    locais: "Todas as UBS do município"
+  },
+  {
+    id: 7,
+    nome: "Cefalexina",
+    dosagem: "500 mg (Drágea / Cápsula)",
+    categoria: "antibiotico",
+    padrao: "Componente Básico RENAME",
+    receita: "Receita de Controle Especial em 2 vias (1 via retida) — Validade: 10 dias",
+    docs: "RG do paciente e do comprador, receita em 2 vias legível",
+    locais: "Farmácia Polo Vicente de Carvalho e UBS Vila Maia"
+  },
+  {
+    id: 8,
+    nome: "Hidroclorotiazida",
+    dosagem: "25 mg (Comprimido)",
+    categoria: "pressao",
+    padrao: "Padrão RENAME / REMUME",
+    receita: "Receita Comum (1 via) — Validade: 180 dias",
+    docs: "RG e Cartão Nacional de Saúde (SUS)",
+    locais: "Todas as Farmácias das UBSs"
+  }
+];
+
+let currentMedCat = 'todos';
+let currentMedQuery = '';
+
+function renderMedicamentosList() {
+  const container = document.getElementById('medicamentosListContainer');
+  if (!container) return;
+
+  const filtered = medicamentosData.filter(m => {
+    const catMatch = currentMedCat === 'todos' || m.categoria === currentMedCat;
+    const q = currentMedQuery.toLowerCase().trim();
+    const queryMatch = !q || m.nome.toLowerCase().includes(q) || m.dosagem.toLowerCase().includes(q);
+    return catMatch && queryMatch;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="app-card" style="text-align:center; padding:22px 14px;">
+        <p style="font-size:calc(0.85rem * var(--font-scale)); font-weight:700; color:var(--text-secondary); margin-bottom:4px;">Nenhum medicamento encontrado para "${currentMedQuery}".</p>
+        <span style="font-size:calc(0.74rem * var(--font-scale)); color:var(--text-muted);">Confira a grafia ou consulte a Farmácia Polo municipal.</span>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(med => `
+    <article class="med-card">
+      <div class="med-header">
+        <div>
+          <h3 class="med-name">${med.nome}</h3>
+          <span class="med-dose">${med.dosagem}</span>
+        </div>
+        <span class="badge-pill">SUS / RENAME</span>
+      </div>
+
+      <div class="med-meta-box">
+        <div class="med-row">
+          <strong>Tipo de Receita:</strong>
+          <span>${med.receita}</span>
+        </div>
+        <div class="med-row">
+          <strong>Documentos:</strong>
+          <span>${med.docs}</span>
+        </div>
+        <div class="med-row">
+          <strong>Onde Retirar:</strong>
+          <span>${med.locais}</span>
+        </div>
+      </div>
+    </article>
+  `).join('');
+}
+
+function searchMedicamentos(query) {
+  currentMedQuery = query;
+  renderMedicamentosList();
+}
+
+function filterMedByCategory(cat, btnEl) {
+  currentMedCat = cat;
+  document.querySelectorAll('[data-medfilter]').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+  renderMedicamentosList();
+}
+
+/* ==========================================================================
+   3. NOTÍCIAS ("SAÚDE EM FOCO") E COMUNIDADE
+   ========================================================================== */
+const newsData = [
+  {
+    id: 1,
+    tag: "Campanha de Vacinação",
+    title: "Mutirão de atualização vacinal nas UBS do município",
+    date: "27 Out 2026",
+    desc: "Horários ampliados para imunização contra gripe e vacinas de rotina em todas as unidades.",
+    img: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=420&q=80",
+    fullText: "A Secretaria de Saúde ampliou o atendimento das salas de vacina em todas as UBS do município. O comparecimento pode ser feito com caderneta de vacinação e Cartão SUS para atualização das doses contra a gripe, hepatite e reforço contra a dengue."
+  },
+  {
+    id: 2,
+    tag: "Prevenção de Doenças",
+    title: "Combate integrado a focos do mosquito Aedes aegypti",
+    date: "25 Out 2026",
+    desc: "Vistoria nos bairros e orientação sobre descarte seguro de recipientes e pneus.",
+    img: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=420&q=80",
+    fullText: "Ações conjuntas entre agentes ambientais e de saúde percorrem os bairros para eliminação de criadouros. A população pode utilizar os Ecopontos municipais para descarte gratuito de entulho e materiais inservíveis."
+  },
+  {
+    id: 3,
+    tag: "Proteção Animal",
+    title: "Feira de adoção responsável e agendamento de castração",
+    date: "23 Out 2026",
+    desc: "Setor de Zoonoses oferece atendimento e orientações de bem-estar animal.",
+    img: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=420&q=80",
+    fullText: "Animais resgatados e recuperados estarão disponíveis para adoção consciente neste sábado. O setor também abre novo lote de castrações gratuitas para tutores cadastrados de baixa renda."
+  }
+];
+
+let communityData = [
+  {
+    id: 101,
+    autor: "Associação de Moradores Vila Maia",
+    tema: "Ação Comunitária",
+    texto: "Neste sábado às 08h realizaremos o plantio coletivo de 40 mudas nativas e limpeza da praça central. Traga sua garrafa de água!",
+    curtidas: 42,
+    apoiado: false
+  },
+  {
+    id: 102,
+    autor: "Rede Proteção Animal Litoral",
+    tema: "Proteção Animal",
+    texto: "Mutirão de castração gratuita com inscrições abertas para moradores cadastrados. Confiram os documentos na aba Farmácia.",
+    curtidas: 68,
+    apoiado: true
+  }
+];
+
+function renderNewsCards(searchQuery = '') {
+  const container = document.getElementById('homeNewsList');
+  if (!container) return;
+
+  const filtered = newsData.filter(item => {
+    if (!searchQuery) return true;
+    return (item.title + ' ' + item.tag + ' ' + item.desc).toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="app-card" style="text-align:center; color:var(--text-secondary); font-size:calc(0.78rem * var(--font-scale));">Nenhuma notícia correspondente.</div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(n => `
+    <article class="focus-card" onclick="openNewsDetail(${n.id})">
+      <img class="focus-img" src="${n.img}" alt="${n.title}" onerror="this.src='https://placehold.co/240x200/159947/ffffff?text=cuidACAO'" />
+      <div class="focus-body">
+        <span class="focus-tag">${n.tag}</span>
+        <h3 class="focus-title">${n.title}</h3>
+        <span class="focus-date">${n.date}</span>
+      </div>
+    </article>
+  `).join('');
+}
+
+function openNewsDetail(id) {
+  const n = newsData.find(item => item.id === id);
+  if (!n) return;
+  document.getElementById('detailNewsCat').textContent = n.tag;
+  document.getElementById('detailNewsImg').src = n.img;
+  document.getElementById('detailNewsTitle').textContent = n.title;
+  document.getElementById('detailNewsDate').textContent = n.date;
+  document.getElementById('detailNewsText').textContent = n.fullText;
+  document.getElementById('newsDetailSheet').classList.add('open');
+}
+
+function closeNewsDetailSheet() {
+  document.getElementById('newsDetailSheet').classList.remove('open');
+}
+
+function renderCommunityFeed() {
+  const homePreview = document.getElementById('homeCommunityPreview');
+  const fullList = document.getElementById('communityFeedList');
+
+  const cardHtml = (post) => `
+    <div class="app-card">
+      <span class="badge-pill">${post.tema}</span>
+      <h3 style="font-size:calc(0.88rem * var(--font-scale)); font-weight:800; margin-bottom:3px;">${post.autor}</h3>
+      <p style="font-size:calc(0.78rem * var(--font-scale)); color:var(--text-secondary); line-height:1.4;">${post.texto}</p>
+      <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+        <button
+          type="button"
+          onclick="toggleLikePost(${post.id})"
+          class="pill-btn ${post.apoiado ? 'active' : ''}"
+          style="padding:5px 11px;"
+        >
+          💚 Apoiar (${post.curtidas})
+        </button>
+      </div>
+    </div>
+  `;
+
+  if (homePreview && communityData.length > 0) {
+    homePreview.innerHTML = cardHtml(communityData[0]);
+  }
+  if (fullList) {
+    fullList.innerHTML = communityData.map(cardHtml).join('');
+  }
+}
+
+function toggleLikePost(id) {
+  const p = communityData.find(item => item.id === id);
+  if (!p) return;
+  p.apoiado = !p.apoiado;
+  p.curtidas += p.apoiado ? 1 : -1;
+  renderCommunityFeed();
+}
+
+function handlePostSubmit(e) {
+  e.preventDefault();
+  const autor = document.getElementById('postAutor').value.trim();
+  const tema = document.getElementById('postTema').value;
+  const texto = document.getElementById('postTexto').value.trim();
+
+  communityData.unshift({
+    id: Date.now(),
+    autor,
+    tema,
+    texto,
+    curtidas: 1,
+    apoiado: true
+  });
+
+  renderCommunityFeed();
+  e.target.reset();
+  showToast('Publicado com sucesso no mural!');
+}
+
+/* ==========================================================================
+   4. DENÚNCIAS AMBIENTAIS E ANIMAIS (COM PROTOCOLO #DEN-XXXXXX)
+   ========================================================================== */
+const denunciaTypes = {
+  ambiental: [
+    "Descarte irregular de lixo / entulho",
+    "Queimada urbana ou foco de incêndio",
+    "Poluição de rios, córregos ou praias",
+    "Poda predatória ou desmatamento ilegal"
+  ],
+  animal: [
+    "Abandono de animal em via pública ou imóvel",
+    "Maus-tratos físicos ou privação de água e comida",
+    "Animal atropelado ou ferido precisando de socorro",
+    "Confinamento irregular ou falta de abrigo"
+  ]
+};
+
+let denunciasHistory = [
+  {
+    id: 1,
+    protocolo: "DEN-482103",
+    categoria: "Ambiental",
+    tipo: "Descarte irregular de lixo / entulho",
+    local: "R. Brg. Eduardo Gomes, próx. nº 480 — Paecara",
+    status: "Equipe acionada"
+  },
+  {
+    id: 2,
+    protocolo: "DEN-319502",
+    categoria: "Maus-tratos Animais",
+    tipo: "Abandono de animal em via pública",
+    local: "Praça central — Vila Maia",
+    status: "Em triagem"
+  }
+];
+
+function selectDenunciaType(type) {
+  openAppScreen('denuncias');
+  const catInput = document.getElementById('denunciaCatInput');
+  const select = document.getElementById('denunciaSelectTipo');
+  const pillAmb = document.getElementById('pillDenAmbiental');
+  const pillAni = document.getElementById('pillDenAnimal');
+
+  if (type === 'animal') {
+    catInput.value = 'Proteção Animal';
+    pillAni.classList.add('active');
+    pillAmb.classList.remove('active');
+    select.innerHTML = denunciaTypes.animal.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+  } else {
+    catInput.value = 'Ambiental';
+    pillAmb.classList.add('active');
+    pillAni.classList.remove('active');
+    select.innerHTML = denunciaTypes.ambiental.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+  }
+}
+
+function useGpsLocation() {
+  const locInput = document.getElementById('denunciaLocalInput');
+  if (locInput) {
+    locInput.value = "Av. Presidente Vargas — Guarujá, SP (Ponto GPS)";
+    showToast("Localização GPS preenchida!");
+  }
+}
+
+function renderDenunciasHistory() {
+  const container = document.getElementById('denunciasHistoryList');
+  if (!container) return;
+
+  container.innerHTML = denunciasHistory.map(d => `
+    <div class="app-card">
+      <span class="badge-pill">Protocolo #${d.protocolo}</span>
+      <h3 style="font-size:calc(0.86rem * var(--font-scale)); font-weight:800;">${d.tipo}</h3>
+      <p style="font-size:calc(0.76rem * var(--font-scale)); color:var(--text-secondary); margin-top:2px;">📍 ${d.local}</p>
+      <p style="font-size:calc(0.73rem * var(--font-scale)); color:var(--brand-primary); font-weight:700; margin-top:4px;">Status: ${d.status}</p>
+    </div>
+  `).join('');
+}
+
+function handleDenunciaSubmit(e) {
+  e.preventDefault();
+  const cat = document.getElementById('denunciaCatInput').value;
+  const tipo = document.getElementById('denunciaSelectTipo').value;
+  const local = document.getElementById('denunciaLocalInput').value.trim();
+  const protocoloNum = Math.floor(100000 + Math.random() * 900000);
+  const protocolo = `DEN-${protocoloNum}`;
+
+  denunciasHistory.unshift({
+    id: Date.now(),
+    protocolo,
+    categoria: cat,
+    tipo,
+    local,
+    status: "Protocolo Aberto"
+  });
+
+  renderDenunciasHistory();
+  document.getElementById('denunciaLocalInput').value = '';
+  document.getElementById('denunciaDescInput').value = '';
+  showToast(`Denúncia enviada! Protocolo #${protocolo}`);
+}
+
+/* ==========================================================================
+   5. MAPA INTERATIVO REAL (GUARUJÁ - SP)
+   ========================================================================== */
+const guarujaLocations = [
+  {
+    id: 1,
+    name: "Hospital Santo Amaro / Farmácia Básica Vila Maia",
+    type: "saude",
+    badge: "Farmácia Básica / UBS",
+    color: "#159947",
+    coords: [-23.9944, -46.2591],
+    address: "R. Quinto Bertoldi, 40 — Vila Maia, Guarujá - SP",
+    hours: "Atendimento 24h / Farmácia 07h às 18h"
+  },
+  {
+    id: 2,
+    name: "Farmácia Polo Vicente de Carvalho",
+    type: "saude",
+    badge: "Farmácia Polo Municipal",
+    color: "#159947",
+    coords: [-23.9412, -46.2845],
+    address: "Av. Santos Dumont — Vicente de Carvalho, Guarujá - SP",
+    hours: "Seg a Sex, 08h às 17h"
+  },
+  {
+    id: 3,
+    name: "Ecoponto Guarujá (Paecara)",
+    type: "ambiental",
+    badge: "Ecoponto Ambiental",
+    color: "#0d9488",
+    coords: [-23.9385, -46.2862],
+    address: "R. Brg. Eduardo Gomes, 489 — Paecara, Guarujá - SP",
+    hours: "Seg a Sáb, 08h às 17h (Descarte Gratuito)"
+  },
+  {
+    id: 4,
+    name: "Bem-Estar e Proteção Animal (Zoonoses)",
+    type: "animal",
+    badge: "Proteção Animal / Zoonoses",
+    color: "#d97706",
+    coords: [-23.9765, -46.2450],
+    address: "Av. Presidente Vargas — Guarujá - SP",
+    hours: "Seg a Sex, 08h às 17h"
+  }
+];
+
+let leafletMapInstance = null;
+let leafletMarkersGroup = null;
+
+function initMobileLeaflet() {
+  if (leafletMapInstance || typeof L === 'undefined') return;
+  const mapContainer = document.getElementById('mobile-map');
+  if (!mapContainer) return;
+
+  leafletMapInstance = L.map('mobile-map').setView([-23.9750, -46.2550], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(leafletMapInstance);
+
+  leafletMarkersGroup = L.layerGroup().addTo(leafletMapInstance);
+  renderMapPoints('todos');
+}
+
+function renderMapPoints(filterType) {
+  const container = document.getElementById('mapLocationsContainer');
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (leafletMarkersGroup) leafletMarkersGroup.clearLayers();
+
+  const filtered = filterType === 'todos'
+    ? guarujaLocations
+    : guarujaLocations.filter(loc => loc.type === filterType);
+
+  filtered.forEach(loc => {
+    if (leafletMarkersGroup && typeof L !== 'undefined') {
+      const pin = L.divIcon({
+        className: 'cuidacao-pin',
+        html: `<div style="background:${loc.color};width:20px;height:20px;border-radius:50%;border:3px solid #ffffff;box-shadow:0 2px 6px rgba(0,0,0,0.45);"></div>`,
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
+      });
+
+      L.marker(loc.coords, { icon: pin })
+        .bindPopup(`<strong>${loc.name}</strong><br>${loc.address}<br><small>${loc.hours}</small>`)
+        .addTo(leafletMarkersGroup);
+    }
+
+    const card = document.createElement('div');
+    card.className = 'app-card';
+    card.style.cursor = 'pointer';
+    card.innerHTML = `
+      <span class="badge-pill">${loc.badge}</span>
+      <h3 style="font-size:calc(0.86rem * var(--font-scale)); font-weight:800; margin-bottom:2px;">${loc.name}</h3>
+      <p style="font-size:calc(0.76rem * var(--font-scale)); color:var(--text-secondary); margin-bottom:4px;">📍 ${loc.address}</p>
+      <span style="font-size:calc(0.72rem * var(--font-scale)); color:var(--brand-primary); font-weight:700;">🕒 ${loc.hours}</span>
+    `;
+    card.onclick = () => {
+      if (leafletMapInstance) {
+        leafletMapInstance.setView(loc.coords, 15, { animate: true });
+      }
+      showToast(`Mapa focado em: ${loc.name}`);
+    };
+    container.appendChild(card);
+  });
+}
+
+function filterMapPoints(type, btnEl) {
+  document.querySelectorAll('[data-mapfilter]').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+  renderMapPoints(type);
+}
+
+/* ==========================================================================
+   6. NAVEGAÇÃO ENTRE TELAS DO APLICATIVO
+   ========================================================================== */
+function openAppScreen(screenId) {
+  const target = document.getElementById('screen-' + screenId);
+  if (!target) return;
+
+  if (screenId !== 'usuario') {
+    const password = document.getElementById('accountPassword');
+    if (password) {
+      password.value = '';
+      password.type = 'password';
+    }
+    const toggle = document.getElementById('accountPasswordToggle');
+    if (toggle) {
+      toggle.classList.remove('is-visible');
+      toggle.setAttribute('aria-label', 'Mostrar senha');
+      toggle.setAttribute('aria-pressed', 'false');
+    }
+  }
+
+  document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
+  target.classList.add('active');
+
+  document.querySelectorAll('.nav-tab').forEach(b => {
+    const active = b.getAttribute('data-tab') === screenId;
+    b.classList.toggle('active', active);
+    if (active) b.setAttribute('aria-current', 'page');
+    else b.removeAttribute('aria-current');
+  });
+
+  const scrollBox = document.getElementById('mainScrollArea');
+  if (scrollBox) scrollBox.scrollTo({ top: 0, behavior: 'smooth' });
+
+  if (screenId === 'mapa') {
+    setTimeout(() => {
+      initMobileLeaflet();
+      if (leafletMapInstance) leafletMapInstance.invalidateSize();
+    }, 120);
+  }
+}
+
+function toggleAccountPassword() {
+  const password = document.getElementById('accountPassword');
+  const toggle = document.getElementById('accountPasswordToggle');
+  if (!password || !toggle) return;
+  const visible = password.type === 'password';
+  password.type = visible ? 'text' : 'password';
+  toggle.classList.toggle('is-visible', visible);
+  toggle.setAttribute('aria-label', visible ? 'Ocultar senha' : 'Mostrar senha');
+  toggle.setAttribute('aria-pressed', String(visible));
+}
+
+function handleAccountLogin(event) {
+  event.preventDefault();
+  const password = document.getElementById('accountPassword');
+  const message = document.getElementById('accountLoginMessage');
+  if (password) {
+    password.value = '';
+    password.type = 'password';
+  }
+  const toggle = document.getElementById('accountPasswordToggle');
+  if (toggle) {
+    toggle.classList.remove('is-visible');
+    toggle.setAttribute('aria-label', 'Mostrar senha');
+    toggle.setAttribute('aria-pressed', 'false');
+  }
+  if (message) {
+    message.textContent = 'O acesso à conta ainda não está disponível. Nenhum dado foi enviado.';
+    message.hidden = false;
+  }
+}
+
+function scrollToHomeNews() {
+  openAppScreen('inicio');
+  setTimeout(() => {
+    const header = document.getElementById('homeNewsHeader');
+    if (header) header.scrollIntoView({ behavior: 'smooth' });
+  }, 60);
+}
+
+function filterHomeContent(query) {
+  const q = query.toLowerCase().trim();
+  const clearBtn = document.getElementById('clearSearchBtn');
+  if (clearBtn) clearBtn.style.display = q.length > 0 ? 'inline-flex' : 'none';
+
+  document.querySelectorAll('#homeServicesGrid .service-card').forEach(card => {
+    const text = (card.innerText + ' ' + (card.getAttribute('data-keywords') || '')).toLowerCase();
+    card.style.display = (!q || text.includes(q)) ? '' : 'none';
+  });
+
+  renderNewsCards(q);
+}
+
+function clearHomeSearch() {
+  const input = document.getElementById('homeSearchInput');
+  if (input) input.value = '';
+  filterHomeContent('');
+}
+
+/* ==========================================================================
+   7. MODO CLARO, MODO ESCURO E MODO AUTOMÁTICO
+   ========================================================================== */
+const osDarkModeMatcher = window.matchMedia('(prefers-color-scheme: dark)');
+
+function applyAppTheme(mode) {
+  const effective = mode === 'auto' ? (osDarkModeMatcher.matches ? 'dark' : 'light') : mode;
+  document.documentElement.setAttribute('data-theme', effective);
+
+  ['light', 'dark', 'auto'].forEach(m => {
+    const btn = document.getElementById('themeBtn-' + m);
+    if (btn) btn.classList.toggle('active', mode === m);
+  });
+}
+
+function setAppTheme(mode) {
+  setStorage('cuidacao_theme', mode);
+  applyAppTheme(mode);
+  const label = mode === 'light' ? 'Modo Claro ativado' : mode === 'dark' ? 'Modo Escuro ativado' : 'Tema Automático ativado';
+  showToast(label);
+}
+
+osDarkModeMatcher.addEventListener('change', () => {
+  const saved = getStorage('cuidacao_theme', 'light');
+  if (saved === 'auto') applyAppTheme('auto');
+});
+
+/* ==========================================================================
+   8. ACESSIBILIDADE: TAMANHO DAS LETRAS
+   ========================================================================== */
+const fontLevels = ['small', 'default', 'large'];
+const fontNames = ['Pequeno', 'Padrão', 'Grande'];
+
+function applyFontScaleByIndex(indexValue) {
+  const idx = Math.max(0, Math.min(2, parseInt(indexValue, 10)));
+  document.documentElement.setAttribute('data-font', fontLevels[idx]);
+
+  const slider = document.getElementById('fontSlider');
+  if (slider) slider.value = String(idx);
+
+  [0, 1, 2].forEach(i => {
+    const lbl = document.getElementById('fontLbl-' + i);
+    if (lbl) lbl.classList.toggle('active-label', i === idx);
+  });
+
+  setStorage('cuidacao_font_idx', String(idx));
+}
+
+function stepFontSize(delta) {
+  const cur = parseInt(getStorage('cuidacao_font_idx', '1'), 10);
+  const next = Math.max(0, Math.min(2, cur + delta));
+  applyFontScaleByIndex(next);
+  showToast('Tamanho da letra: ' + fontNames[next]);
+}
+
+/* ==========================================================================
+   9. NOTIFICAÇÕES E TOAST FEEDBACK
+   ========================================================================== */
+function openNotificationsSheet() {
+  document.getElementById('notificationsSheet').classList.add('open');
+  const badge = document.getElementById('notifBadge');
+  if (badge) badge.style.display = 'none';
+}
+
+function closeNotificationsSheet() {
+  document.getElementById('notificationsSheet').classList.remove('open');
+}
+
+let toastTimer = null;
+function showToast(message) {
+  const toast = document.getElementById('appToast');
+  const msgSpan = document.getElementById('appToastMsg');
+  if (!toast || !msgSpan) return;
+  msgSpan.textContent = message;
+  toast.style.display = 'flex';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.style.display = 'none';
+  }, 3000);
+}
+
+/* ==========================================================================
+   10. INICIALIZAÇÃO
+   ========================================================================== */
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelector('.nav-tab.active')?.setAttribute('aria-current', 'page');
+
+  // Carrega temas e acessibilidade salvos
+  const savedTheme = getStorage('cuidacao_theme', 'light');
+  applyAppTheme(savedTheme);
+
+  const savedFont = getStorage('cuidacao_font_idx', '1');
+  applyFontScaleByIndex(savedFont);
+
+  // Renderiza dados iniciais
+  renderMedicamentosList();
+  renderNewsCards();
+  selectDenunciaType('ambiental');
+  renderDenunciasHistory();
+  renderCommunityFeed();
+  renderMapPoints('todos');
+});
+
+</script>
+</body>
+</html>
